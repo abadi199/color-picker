@@ -96,14 +96,51 @@ hueYCoordToColor model =
 
         Just y ->
             let
-                pct =
-                    y / popUpHeight * 100
+                hue =
+                    round (y / popUpHeight * 360)
+
+                ( red, green, blue ) =
+                    hsvToRgb hue 100 100
+
+                _ =
+                    Debug.log "red" red
             in
-                "rgb(" ++ red pct ++ "," ++ green pct ++ "," ++ blue pct ++ ")"
+                "rgb("
+                    ++ toString red
+                    ++ ","
+                    ++ toString green
+                    ++ ","
+                    ++ toString blue
+                    ++ ")"
 
 
+hsvToRgb : Int -> Int -> Int -> ( Int, Int, Int )
+hsvToRgb h s v =
+    let
+        c =
+            Debug.log "c" <| toFloat (v * s)
 
---red pct =
+        x =
+            Debug.log "x" <| c * toFloat (1 - (abs ((h // 60) % 2 - 1)))
+
+        m =
+            Debug.log "m" <| (toFloat v) - c
+
+        normalize r =
+            round ((r + m) * 255)
+    in
+        if h < 60 then
+            ( normalize c, normalize x, normalize 0 )
+        else if h < 120 then
+            ( normalize x, normalize c, normalize 0 )
+        else if h < 180 then
+            ( normalize 0, normalize c, normalize x )
+        else if h < 240 then
+            ( normalize 0, normalize x, normalize c )
+        else if h < 300 then
+            ( normalize x, normalize 0, normalize c )
+        else
+            ( normalize c, normalize 0, normalize x )
 
 
 satCoordToColor : Model -> String
