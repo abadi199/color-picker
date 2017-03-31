@@ -114,6 +114,8 @@ hueYCoordToColor model =
                     ++ ")"
 
 
+{-| Based on http://www.rapidtables.com/convert/color/hsv-to-rgb.htm
+-}
 hsvToRgb : Int -> Int -> Int -> ( Int, Int, Int )
 hsvToRgb h s v =
     let
