@@ -7,7 +7,10 @@ import Json.Decode exposing (map2, field, float, int)
 
 onMouseEvent : (Point -> msg) -> Svg.Attribute msg
 onMouseEvent msg =
-    Svg.Events.on "mousemove" (Json.Decode.map msg mouseEventDecoder)
+    mouseEventDecoder
+        |> Json.Decode.andThen mouseDragDecoder
+        |> Json.Decode.map msg
+        |> Svg.Events.on "mousemove"
 
 
 type alias Point =
@@ -20,3 +23,11 @@ mouseEventDecoder =
         (field "offsetX" float)
         (field "offsetY" float)
         (field "buttons" int)
+
+
+mouseDragDecoder : Point -> Json.Decode.Decoder Point
+mouseDragDecoder point =
+    if point.button == 1 then
+        Json.Decode.succeed point
+    else
+        Json.Decode.fail "button not pressed"
