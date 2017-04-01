@@ -9,6 +9,7 @@ import ColorPicker.Styles exposing (css, CssClasses(..))
 import Html.CssHelpers
 import Css
 import ColorPicker.Events
+import ColorPicker.Math as Math
 
 
 initialModel : Model
@@ -97,13 +98,10 @@ hueYCoordToColor model =
         Just y ->
             let
                 hue =
-                    round (y / popUpHeight * 360)
+                    round (y / (toFloat popUpHeight) * 360)
 
                 ( red, green, blue ) =
-                    hsvToRgb hue 100 100
-
-                _ =
-                    Debug.log "red" red
+                    Math.hsvToRgb hue 1 1
             in
                 "rgb("
                     ++ toString red
@@ -112,37 +110,6 @@ hueYCoordToColor model =
                     ++ ","
                     ++ toString blue
                     ++ ")"
-
-
-{-| Based on http://www.rapidtables.com/convert/color/hsv-to-rgb.htm
--}
-hsvToRgb : Int -> Int -> Int -> ( Int, Int, Int )
-hsvToRgb h s v =
-    let
-        c =
-            Debug.log "c" <| toFloat (v * s)
-
-        x =
-            Debug.log "x" <| c * toFloat (1 - (abs ((h // 60) % 2 - 1)))
-
-        m =
-            Debug.log "m" <| (toFloat v) - c
-
-        normalize r =
-            round ((r + m) * 255)
-    in
-        if h < 60 then
-            ( normalize c, normalize x, normalize 0 )
-        else if h < 120 then
-            ( normalize x, normalize c, normalize 0 )
-        else if h < 180 then
-            ( normalize 0, normalize c, normalize x )
-        else if h < 240 then
-            ( normalize 0, normalize x, normalize c )
-        else if h < 300 then
-            ( normalize x, normalize 0, normalize c )
-        else
-            ( normalize c, normalize 0, normalize x )
 
 
 satCoordToColor : Model -> String
