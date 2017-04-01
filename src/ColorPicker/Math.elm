@@ -2,7 +2,11 @@ module ColorPicker.Math
     exposing
         ( mod
         , hsvToRgb
+        , colorToCssRgb
+        , colorToCssRgba
         )
+
+import Color exposing (Color)
 
 
 mod : Float -> Int -> Float
@@ -20,7 +24,7 @@ Where
     0 <= s < <= 1
     0 <= v <= 1
 -}
-hsvToRgb : Int -> Float -> Float -> ( Int, Int, Int )
+hsvToRgb : Int -> Float -> Float -> Color
 hsvToRgb h s v =
     let
         c =
@@ -36,14 +40,52 @@ hsvToRgb h s v =
             round ((r + m) * 255)
     in
         if h < 60 then
-            ( normalize c, normalize x, normalize 0 )
+            Color.rgb (normalize c) (normalize x) (normalize 0)
         else if h < 120 then
-            ( normalize x, normalize c, normalize 0 )
+            Color.rgb (normalize x) (normalize c) (normalize 0)
         else if h < 180 then
-            ( normalize 0, normalize c, normalize x )
+            Color.rgb (normalize 0) (normalize c) (normalize x)
         else if h < 240 then
-            ( normalize 0, normalize x, normalize c )
+            Color.rgb (normalize 0) (normalize x) (normalize c)
         else if h < 300 then
-            ( normalize x, normalize 0, normalize c )
+            Color.rgb (normalize x) (normalize 0) (normalize c)
         else
-            ( normalize c, normalize 0, normalize x )
+            Color.rgb (normalize c) (normalize 0) (normalize x)
+
+
+colorToCssRgb : Color -> String
+colorToCssRgb color =
+    color
+        |> Color.toRgb
+        |> rgbaToCssRgb
+
+
+colorToCssRgba : Color -> String
+colorToCssRgba color =
+    color
+        |> Color.toRgb
+        |> rgbaToCssRgba
+
+
+rgbaToCssRgb : { red : Int, green : Int, blue : Int, alpha : Float } -> String
+rgbaToCssRgb { red, green, blue, alpha } =
+    "rgb("
+        ++ toString red
+        ++ ","
+        ++ toString green
+        ++ ","
+        ++ toString blue
+        ++ ")"
+
+
+rgbaToCssRgba : { red : Int, green : Int, blue : Int, alpha : Float } -> String
+rgbaToCssRgba { red, green, blue, alpha } =
+    "rgba("
+        ++ toString red
+        ++ ","
+        ++ toString green
+        ++ ","
+        ++ toString blue
+        ++ ","
+        ++ toString alpha
+        ++ ")"

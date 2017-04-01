@@ -99,17 +99,9 @@ hueYCoordToColor model =
             let
                 hue =
                     round (y / (toFloat popUpHeight) * 360)
-
-                ( red, green, blue ) =
-                    Math.hsvToRgb hue 1 1
             in
-                "rgb("
-                    ++ toString red
-                    ++ ","
-                    ++ toString green
-                    ++ ","
-                    ++ toString blue
-                    ++ ")"
+                Math.hsvToRgb hue 1 1
+                    |> Math.colorToCssRgb
 
 
 satCoordToColor : Model -> String
@@ -124,18 +116,19 @@ satCoordToColor model =
         ( _, _, Nothing ) ->
             model.color
 
-        ( Just x, Just y, Just hueY ) ->
+        ( Just satX, Just satY, Just hueY ) ->
             let
                 hue =
-                    toString ((hueY / popUpHeight) * 360)
+                    round (hueY / (toFloat popUpHeight) * 360)
 
                 saturation =
-                    toString ((x / saturationWidth) * 100)
+                    (satX / saturationWidth)
 
-                lightness =
-                    toString (100 - ((y / popUpHeight) * 100))
+                value =
+                    1 - (satY / popUpHeight)
             in
-                "hsl(" ++ hue ++ ", " ++ saturation ++ "%, " ++ lightness ++ "%)"
+                Math.hsvToRgb hue saturation value
+                    |> Math.colorToCssRgb
 
 
 hueGradient : Model -> Html Msg
